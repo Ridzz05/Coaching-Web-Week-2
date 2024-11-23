@@ -9,7 +9,9 @@
 ![Desktop](/public/desktop.png)
 
 ## How to use :
+
 1. Clone repository ini
-2. Bash `npm install`
-3. Bash `npm run dev`
-4. Buka browser dan akses `http://localhost:3000`
+2. Bash `cd Coaching-Web-Week-2`
+3. Bash `npm install`
+4. Bash `npm run dev`
+5. Buka browser dan akses `http://localhost:3000`
