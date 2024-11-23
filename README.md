@@ -2,14 +2,14 @@
 
 ## Screenshots / Gambar Aplikasi
 
-### Halaman Home
-![Halaman Home](/public/mobile.png)
+### Mobile View
+![Movile](/public/mobile.png)
 
-### Halaman About
-![Halaman About](/public/desktop.png)
+### Desktop View
+![Desktop](/public/desktop.png)
 
-## Cara Menjalankan Aplikasi
+## How to use :
 1. Clone repository ini
-2. Jalankan `npm install`
-3. Jalankan `npm run dev`
+2. Bash `npm install`
+3. Bash `npm run dev`
 4. Buka browser dan akses `http://localhost:3000`
