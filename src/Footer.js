@@ -55,7 +55,7 @@ function Footer({ bgColor, isColorDark }) {
               rel="noopener noreferrer"
               className="ml-1 font-medium"
             >
-             Rizki Sigme Bet
+             Rizki Sigma Bet
             </a>
           </div>
 
