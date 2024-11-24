@@ -235,16 +235,29 @@ function App() {
   };
 
   return (
-    <div className="app-container transition-all duration-300 ease-in-out">
+    <div 
+      className="app-container will-change-transform"
+      style={{ 
+        WebkitOverflowScrolling: 'touch',  // Untuk performa scroll iOS
+        transform: 'translateZ(0)'  // Hardware acceleration
+      }}
+    >
       <Navbar {...commonProps} />
       <div 
-        className="min-h-screen pt-20 p-8 transition-all duration-300 ease-in-out" 
-        style={{ backgroundColor: state.bgColor }}
+        className="min-h-screen pt-20 p-8 transition-colors duration-300 ease-in-out" 
+        style={{ 
+          backgroundColor: state.bgColor,
+          willChange: 'background-color'
+        }}
       >
         <div className="max-w-md mx-auto space-y-6">
           <div 
-            className="p-6 rounded-xl shadow-xl space-y-6 backdrop-blur-sm transition-all duration-300 ease-in-out"
-            style={{ backgroundColor: `${state.bgColor}99` }}
+            className="p-6 rounded-xl shadow-xl space-y-6 backdrop-blur-sm transition-colors duration-300 ease-in-out"
+            style={{ 
+              backgroundColor: `${state.bgColor}99`,
+              willChange: 'background-color',
+              transform: 'translateZ(0)'
+            }}
           >
             <Counter 
               count={state.clickCount} 
