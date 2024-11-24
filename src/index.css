@@ -1,3 +1,39 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+* {
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  body {
+    overscroll-behavior: none;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  .backdrop-blur-sm {
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    transform: translateZ(0);
+  }
+  
+  /* Optimisasi untuk transisi warna */
+  .transition-colors {
+    transition-property: background-color, border-color, color, fill, stroke;
+  }
+  
+  /* Mengurangi animasi pada mobile */
+  @media (max-width: 768px) {
+    .transition-all {
+      transition-duration: 200ms !important;
+    }
+    
+    .hover\:scale-105 {
+      transform: none !important;
+    }
+    
+    .hover\:shadow-xl {
+      box-shadow: none !important;
+    }
+  }
