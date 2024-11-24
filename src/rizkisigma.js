@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, Fragment, useCallback, useMemo } from 'react';
 import { Menu, Transition, Dialog } from '@headlessui/react';
 import { ChevronUpIcon, UserCircleIcon, CodeBracketIcon, PaintBrushIcon, ExclamationTriangleIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import Navbar from './Navbar';
@@ -166,106 +166,115 @@ function AlertDialog({ isOpen, closeModal, message, bgColor, isColorDark }) {
   );
 }
 
-// Komponen Utama App
-function App() {
-  const [clickCount, setClickCount] = useState(0);
-  const [inputValue, setInputValue] = useState('');
-  const [bgColor, setBgColor] = useState('#ffffff');
-  const [isAlertOpen, setIsAlertOpen] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
-
-  // Fungsi untuk menentukan apakah warna gelap atau terang
-  const isColorDark = (color) => {
+// Optimisasi fungsi isColorDark dengan memoization
+const memoizedIsColorDark = (() => {
+  const cache = new Map();
+  return (color) => {
+    if (cache.has(color)) return cache.get(color);
     const hex = color.replace('#', '');
     const r = parseInt(hex.substr(0, 2), 16);
     const g = parseInt(hex.substr(2, 2), 16);
     const b = parseInt(hex.substr(4, 2), 16);
     const brightness = ((r * 299) + (g * 587) + (b * 114)) / 1000;
-    return brightness < 128;
+    const result = brightness < 128;
+    cache.set(color, result);
+    return result;
   };
+})();
 
-  const handleCounterClick = () => {
-    const newCount = clickCount + 1;
-    setClickCount(newCount);
-    document.title = `${newCount} kali diklik`;
-  };
+// Optimisasi komponen App
+function App() {
+  const [state, setState] = useState({
+    clickCount: 0,
+    inputValue: '',
+    bgColor: '#ffffff',
+    isAlertOpen: false,
+    alertMessage: ''
+  });
 
-  const handleInputChange = (e) => {
-    setInputValue(e.target.value);
-  };
+  const handleCounterClick = useCallback(() => {
+    setState(prev => {
+      const newCount = prev.clickCount + 1;
+      document.title = `${newCount} kali diklik`;
+      return { ...prev, clickCount: newCount };
+    });
+  }, []);
 
-  const handleSubmit = (e) => {
+  const handleInputChange = useCallback((e) => {
+    setState(prev => ({ ...prev, inputValue: e.target.value }));
+  }, []);
+
+  const handleSubmit = useCallback((e) => {
     e.preventDefault();
-    if (inputValue.trim()) {
-      setAlertMessage(`Hello ${inputValue}!`);
-      setIsAlertOpen(true);
-      setInputValue('');
-    } else {
-      setAlertMessage('Nama lu siapa bang?');
-      setIsAlertOpen(true);
-    }
-  };
+    setState(prev => ({
+      ...prev,
+      isAlertOpen: true,
+      alertMessage: prev.inputValue.trim() ? 
+        `Hello ${prev.inputValue}!` : 'Nama lu siapa bang?',
+      inputValue: ''
+    }));
+  }, []);
 
-  const handleRandomColor = () => {
-    const randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
-    setBgColor(randomColor);
-  };
+  const handleRandomColor = useCallback(() => {
+    setState(prev => ({
+      ...prev,
+      bgColor: '#' + Math.floor(Math.random()*16777215).toString(16)
+    }));
+  }, []);
 
-  const closeAlert = () => {
-    setIsAlertOpen(false);
+  const closeAlert = useCallback(() => {
+    setState(prev => ({ ...prev, isAlertOpen: false }));
+  }, []);
+
+  const isColorDark = useMemo(() => memoizedIsColorDark(state.bgColor), [state.bgColor]);
+
+  // Memisahkan props yang sering digunakan
+  const commonProps = {
+    bgColor: state.bgColor,
+    isColorDark
   };
 
   return (
     <div className="app-container transition-all duration-300 ease-in-out">
-      <Navbar bgColor={bgColor} />
+      <Navbar {...commonProps} />
       <div 
         className="min-h-screen pt-20 p-8 transition-all duration-300 ease-in-out" 
-        style={{ backgroundColor: bgColor }}
+        style={{ backgroundColor: state.bgColor }}
       >
         <div className="max-w-md mx-auto space-y-6">
           <div 
             className="p-6 rounded-xl shadow-xl space-y-6 backdrop-blur-sm transition-all duration-300 ease-in-out"
-            style={{ backgroundColor: `${bgColor}99` }}
+            style={{ backgroundColor: `${state.bgColor}99` }}
           >
             <Counter 
-              count={clickCount} 
+              count={state.clickCount} 
               onCounterClick={handleCounterClick}
-              bgColor={bgColor}
-              isColorDark={isColorDark(bgColor)}
+              {...commonProps}
             />
 
-            <IdentityCard 
-              bgColor={bgColor}
-              isColorDark={isColorDark(bgColor)}
-            />
+            <IdentityCard {...commonProps} />
 
             <InputForm 
-              inputValue={inputValue}
+              inputValue={state.inputValue}
               onInputChange={handleInputChange}
               onSubmit={handleSubmit}
-              bgColor={bgColor}
-              isColorDark={isColorDark(bgColor)}
+              {...commonProps}
             />
             
             <ColorButton 
               onColorChange={handleRandomColor}
-              bgColor={bgColor}
-              isColorDark={isColorDark(bgColor)}
+              {...commonProps}
             />
           </div>
         </div>
 
-        <Footer 
-          bgColor={bgColor}
-          isColorDark={isColorDark(bgColor)}
-        />
+        <Footer {...commonProps} />
 
         <AlertDialog 
-          isOpen={isAlertOpen}
+          isOpen={state.isAlertOpen}
           closeModal={closeAlert}
-          message={alertMessage}
-          bgColor={bgColor}
-          isColorDark={isColorDark(bgColor)}
+          message={state.alertMessage}
+          {...commonProps}
         />
       </div>
     </div>
